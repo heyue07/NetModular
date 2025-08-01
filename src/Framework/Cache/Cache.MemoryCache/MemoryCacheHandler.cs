@@ -136,15 +136,14 @@ namespace NetModular.Lib.Cache.MemoryCache
 
         private List<string> GetAllKeys()
         {
-            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var entries = _cache.GetType().GetField("_entries", flags).GetValue(_cache);
-            var cacheItems = entries as IDictionary;
-            var keys = new List<string>();
-            if (cacheItems == null) return keys;
-            foreach (DictionaryEntry cacheItem in cacheItems)
+            var cache = _cache as Microsoft.Extensions.Caching.Memory.MemoryCache;
+            if (cache == null)
             {
-                keys.Add(cacheItem.Key.ToString());
+                return new List<string>();
             }
+
+            var keys = cache.Keys.Select(m => m.ToString()).ToList();
+
             return keys;
         }
     }
